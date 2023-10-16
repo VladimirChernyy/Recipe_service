@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http.response import HttpResponse
@@ -93,28 +92,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeReadSerializer
         return CreateRecipeSerializer
 
-    # @staticmethod
-    # def send_message(ingredients):
-    #     shopping_list = 'Купить в магазине:'
-    #     for ingredient in ingredients:
-    #         shopping_list += (
-    #             f"\n{ingredient['ingredient__name']} "
-    #             f"({ingredient['ingredient__measurement_unit']}) - "
-    #             f"{ingredient['amount']}")
-    #     file = 'shopping_list.txt'
-    #     response = HttpResponse(shopping_list, content_type='text/plain')
-    #     response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
-    #     return response
-    #
-    # @action(detail=False, methods=['GET'])
-    # def download_shopping_cart(self, request):
-    #     ingredients = AmountIngredient.objects.filter(
-    #         recipe__shopping_list__user=request.user
-    #     ).order_by('ingredients__name').values(
-    #         'ingredients__name', 'ingredients__measurement_unit'
-    #     ).annotate(amount=Sum('amount'))
-    #     return self.send_message(ingredients)
-    @action(detail=False, methods=('get',),
+    @action(detail=False, methods=('GET',),
             permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request, **kwargs):
         ingredients = (
@@ -131,7 +109,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         file = HttpResponse('Cписок покупок:\n' + '\n'.join(file_list),
                             content_type='text/plain')
         file['Content-Disposition'] = (
-            f'attachment; filename=shopping_cart.txt')
+            'attachment; filename=shopping_cart.txt')
         return file
 
     @action(detail=True, methods=('POST',),

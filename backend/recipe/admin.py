@@ -24,14 +24,15 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'measurement_unit')
+    list_display = ('name', 'measurement_unit')
     search_fields = ('name',)
     list_filter = ('name',)
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'color', 'slug')
+    list_display = ('name', 'color', 'slug')
+    prepopulated_fields = {'slug': ['name']}
     search_fields = ('name',)
 
 
@@ -47,4 +48,3 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'user')
     list_filter = ('recipe', 'user')
     search_fields = ('user',)
-    empty_value_display = '-пусто-'

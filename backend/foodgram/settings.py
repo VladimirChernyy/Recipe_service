@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-from config import SECRET_KEY, DEBUG, ALLOWED_HOSTS, DB_PORT, DB_HOST, DB_NAME, \
-    DB_USER, DB_PASS
+from config import (SECRET_KEY, DEBUG, ALLOWED_HOSTS, DB_PORT, DB_HOST,
+                    DB_NAME, DB_USER, DB_PASS, CSRF_TRUSTED_ORIGINS)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,12 +11,6 @@ SECRET_KEY = SECRET_KEY
 DEBUG = DEBUG
 
 ALLOWED_HOSTS = ALLOWED_HOSTS
-
-CSRF_TRUSTED_ORIGINS = config(
-    "CSRF_TRUSTED_ORIGINS",
-    default="http://localhost, http://127.0.0.1",
-    cast=Csv(),
-)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -32,11 +26,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -106,10 +102,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = '/backend_static/'
 STATIC_ROOT = BASE_DIR / 'static'
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/backend_media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
