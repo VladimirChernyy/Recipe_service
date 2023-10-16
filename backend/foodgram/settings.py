@@ -1,8 +1,7 @@
-import os
 from pathlib import Path
 
 from config import (SECRET_KEY, DEBUG, ALLOWED_HOSTS, DB_PORT, DB_HOST,
-                    DB_NAME, DB_USER, DB_PASS, CSRF_TRUSTED_ORIGINS)
+                    DB_NAME, DB_USER, DB_PASS)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
