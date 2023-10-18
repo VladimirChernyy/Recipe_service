@@ -1,47 +1,106 @@
-from django.conf import settings
+from django.core import validators
 from django.db import models
 
-CustomUser = settings.AUTH_USER_MODEL
-INGREDIENT_TITLE = 10
+from foodgram.constants import (
+    AmountIngredientValidate,
+    RecipeLimitAndValidate, IngredientLimit, TagLimit
+)
+from users.models import CustomUser
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(CustomUser, on_delete=models.SET_NULL,
-                               null=True, related_name='recipes')
-    name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='recipes/image/')
-    text = models.TextField()
-    tags = models.ManyToManyField('Tag', related_name='recipes')
-    ingredients = models.ManyToManyField('Ingredient',
-                                         related_name='recipes',
-                                         through='AmountIngredient')
-    cooking_time = models.PositiveIntegerField(default=1)
+    author = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        verbose_name='Автор',
+        null=True,
+        related_name='recipes'
+    )
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=RecipeLimitAndValidate.MAX_LEN_NAME.value,
+    )
+    image = models.ImageField(
+        verbose_name='Фото рецепта',
+        upload_to='recipes/image/'
+    )
+    text = models.TextField(
+        verbose_name='Описание'
+    )
+    tags = models.ManyToManyField(
+        'Tag',
+        verbose_name='Тег',
+        related_name='recipes'
+    )
+    ingredients = models.ManyToManyField(
+        'Ingredient',
+        verbose_name='Игредиенты',
+        related_name='recipes',
+        through='AmountIngredient'
+    )
+    cooking_time = models.PositiveIntegerField(
+        verbose_name='Время приготовления',
+        default=RecipeLimitAndValidate.DEFAULT,
+        validators=(
+            validators.MinValueValidator(
+                RecipeLimitAndValidate.MIN_COOKING_TIME.value,
+                "Минимальное время приготовления 1 мин.",
+            ),
+            validators.MaxValueValidator(
+                RecipeLimitAndValidate.MAX_COOKING_TIME.value,
+                "Максимальное вреся приготовления 1000 мин.",
+            ),
+        ),
+    )
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
     def __str__(self):
         return self.name
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=60, unique=True)
-    color = models.CharField(max_length=16, unique=True)
-    slug = models.SlugField(unique=True)
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=TagLimit.MAX_LEN_NAME.value,
+        unique=True
+    )
+    color = models.CharField(
+        verbose_name='Цвет',
+        max_length=TagLimit.MAX_LEN_COLOR.value,
+        unique=True
+    )
+    slug = models.SlugField(
+        verbose_name='Url',
+        unique=True
+    )
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
 
     def __str__(self):
         return self.name
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=60)
-    measurement_unit = models.CharField(max_length=10)
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=IngredientLimit.MAX_LEN_NAME.value
+    )
+    measurement_unit = models.CharField(
+        verbose_name='Единицы измерения',
+        max_length=IngredientLimit.MAX_LEN_MEASUREMENT_UNIT.value
+    )
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'measurement_unit'],
@@ -50,15 +109,36 @@ class Ingredient(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.name[:INGREDIENT_TITLE]} {self.measurement_unit}'
+        return (f'{self.name[:IngredientLimit.INGREDIENT_TITLE.value]}'
+                f' {self.measurement_unit}')
 
 
 class AmountIngredient(models.Model):
-    ingredients = models.ForeignKey('Ingredient', on_delete=models.CASCADE,
-                                    related_name='recipe')
+    ingredients = models.ForeignKey(
+        'Ingredient',
+        on_delete=models.CASCADE,
+        related_name='recipe'
+    )
     recipe = models.ForeignKey('Recipe', on_delete=models.CASCADE,
                                related_name='ingredient')
-    amount = models.PositiveIntegerField(default=1)
+    amount = models.PositiveIntegerField(
+        verbose_name='Количество',
+        default=AmountIngredientValidate.DEFAULT,
+        validators=(
+            validators.MinValueValidator(
+                AmountIngredientValidate.MIN_AMOUNT_INGREDIENTS.value,
+                'Минимальное кол-во ингредиентов 1',
+            ),
+            validators.MaxValueValidator(
+                AmountIngredientValidate.MAX_AMOUNT_INGREDIENTS.value,
+                'Слишком много ингредиентов!',
+            ),
+        ),
+    )
+
+    class Meta:
+        verbose_name = 'Кол-во ангредиента'
+        verbose_name_plural = 'Кол-во ингредиентов'
 
     def __str__(self):
         return f'{self.ingredients} + {self.recipe}'
@@ -77,9 +157,25 @@ class FavoriteShoppingCart(models.Model):
 
 class Favorite(FavoriteShoppingCart):
     class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранные'
         default_related_name = 'favorites'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe_favorite'
+            )
+        ]
 
 
 class Cart(FavoriteShoppingCart):
     class Meta:
+        verbose_name = 'Корзина'
+        verbose_name_plural = 'Корзины'
         default_related_name = 'shopping_list'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe_cart'
+            )
+        ]

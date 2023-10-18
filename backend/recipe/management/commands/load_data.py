@@ -1,6 +1,6 @@
+from django.core.management.base import BaseCommand
 import json
 
-from django.core.management.base import BaseCommand
 from recipe.models import Ingredient
 
 
@@ -13,6 +13,7 @@ class Command(BaseCommand):
                 encoding='UTF-8'
         ) as ingredients:
             ingredient_data = json.loads(ingredients.read())
-            for ingredient in ingredient_data:
-                Ingredient.objects.get_or_create(**ingredient)
+            ingredients_to_create = [Ingredient(**ingredient) for ingredient in
+                                     ingredient_data]
+            Ingredient.objects.bulk_create(ingredients_to_create)
         self.stdout.write(self.style.SUCCESS('Data uploaded'))

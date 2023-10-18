@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -6,21 +5,21 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipe.models import (Favorite, Ingredient, AmountIngredient, Recipe,
                            Cart, Tag)
-from rest_framework import status, viewsets, serializers
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, \
+    IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import CustomPagination
-from api.permissions import AuthorStaffOrReadOnly
+from api.permissions import AuthorOrStaff
 from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
                              IngredientSerializer, RecipeReadSerializer,
                              ShopListSerializer, SubscribeListSerializer,
                              TagSerializer, UserSerializer)
+from recipe.models import CustomUser
 from users.models import Follow
-
-CustomUser = get_user_model()
 
 
 class CustomUserViewSet(UserViewSet):
@@ -47,13 +46,11 @@ class CustomUserViewSet(UserViewSet):
 
     @subscribe.mapping.delete
     def destroy_shopping_cart(self, request, **kwargs):
-        try:
-            author = get_object_or_404(CustomUser, id=kwargs.get('id'))
-            Follow.objects.get(username=request.user,
-                               author=author).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Follow.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        author = get_object_or_404(CustomUser, id=kwargs.get('id'))
+        get_object_or_404(
+            Follow, username=request.user, author=author
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=('GET',), detail=False,
             permission_classes=(IsAuthenticated,))
@@ -82,7 +79,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    permission_classes = (AuthorStaffOrReadOnly,)
+    permission_classes = (AuthorOrStaff, IsAuthenticatedOrReadOnly)
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -102,6 +99,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .annotate(total_amount=Sum('amount'))
             .values_list('ingredients__name', 'total_amount',
                          'ingredients__measurement_unit')
+            .order_by('ingredients__name')
         )
         file_list = []
         [file_list.append(
@@ -116,10 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         context = {'request': request}
-        try:
-            recipe = Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            raise serializers.ValidationError('Рецепта не существует')
+        recipe = get_object_or_404(Recipe, id=pk)
         data = {
             'user': request.user.id,
             'recipe': recipe.id
@@ -131,22 +126,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @shopping_cart.mapping.delete
     def destroy_shopping_cart(self, request, pk):
-        try:
-            recipe = get_object_or_404(Recipe, id=pk)
-            Cart.objects.get(user=request.user,
-                             recipe=recipe).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Cart.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        get_object_or_404(
+            Cart,
+            user=request.user.id,
+            recipe=get_object_or_404(Recipe, id=pk)
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=('POST',),
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
         context = {"request": request}
-        try:
-            recipe = Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            raise serializers.ValidationError('Рецепта не существует')
+        recipe = get_object_or_404(Recipe, id=pk)
         data = {
             'user': request.user.id,
             'recipe': recipe.id
@@ -158,10 +149,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @favorite.mapping.delete
     def destroy_favorite(self, request, pk):
-        try:
-            recipe = get_object_or_404(Recipe, id=pk)
-            Favorite.objects.get(user=request.user,
-                                 recipe=recipe).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Favorite.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        get_object_or_404(
+            Favorite,
+            user=request.user,
+            recipe=get_object_or_404(Recipe, id=pk)
+        ).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

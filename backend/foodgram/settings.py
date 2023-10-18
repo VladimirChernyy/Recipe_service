@@ -1,15 +1,16 @@
+from dotenv import load_dotenv
+import os
 from pathlib import Path
 
-from config import (SECRET_KEY, DEBUG, ALLOWED_HOSTS, DB_PORT, DB_HOST,
-                    DB_NAME, DB_USER, DB_PASS)
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = SECRET_KEY
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = DEBUG
+DEBUG = os.getenv('DEBUG', 'False') in ('True', '1', 't')
 
-ALLOWED_HOSTS = ALLOWED_HOSTS
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split()
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -59,24 +60,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# POSTGRES
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASS,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
+        'NAME': os.getenv('POSTGRES_DB', default='django'),
+        'USER': os.getenv('POSTGRES_USER', default='django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default=''),
+        'HOST': os.getenv('DB_HOST', default='db'),
+        'PORT': os.getenv('DB_PORT', default='5432'),
+    },
+    'test_db': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'test_db.sqlite3',
     }
 }
-# test db sqlite
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+
+DATABASES['default']['TEST'] = {'NAME': 'test_db'}
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -93,7 +94,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -131,7 +132,7 @@ DJOSER = {
         "current_user": "api.serializers.UserSerializer",
     },
     'PERMISSIONS': {
-        "user": ("api.permissions.OwnerUserOrReadOnly",),
-        "user_list": ("api.permissions.OwnerUserOrReadOnly",),
+        "user": ("api.permissions.OwnerOrUser",),
+        "user_list": ("api.permissions.OwnerOrUser",),
     },
 }
