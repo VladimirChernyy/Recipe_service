@@ -7,7 +7,7 @@ from rest_framework import serializers, status
 from foodgram.constants import AmountIngredientValidate
 from recipe.models import (Favorite, Ingredient, AmountIngredient, Recipe,
                            Tag, Cart)
-from users.serializers import UserSerializer, UserCreateSerializer
+from users.serializers import UserSerializer
 from users.models import CustomUser
 
 
