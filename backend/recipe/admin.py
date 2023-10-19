@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, AmountIngredientLimit, Recipe,
+from .models import (Favorite, Ingredient, AmountIngredient, Recipe,
                      Cart, Tag)
 
 
 class IngredientInline(admin.TabularInline):
-    model = AmountIngredientLimit
+    model = AmountIngredient
     extra = 3
     min_num = 1
 
