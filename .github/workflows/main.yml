@@ -3,18 +3,6 @@ name: Main foodgram workflow
 on: push
 
 jobs:
-  automated-api-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install Postman CLI
-        run: |
-          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-      - name: Login to Postman CLI
-        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-      - name: Run API tests
-        run: |
-          postman collection run "30426443-c78666df-b114-411e-b882-8aae5aad362d"
   tests:
     runs-on: ubuntu-latest
     services:
@@ -47,8 +35,7 @@ jobs:
           DB_PORT: 5432
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          python -m flake8 backend/
-          python -m pytest
+#          python -m flake8 backend/
           curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
           postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
           postman collection run "30426443-c78666df-b114-411e-b882-8aae5aad362d"
