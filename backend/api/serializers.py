@@ -86,7 +86,7 @@ class AmountIngredientSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = AmountIngredientLimit
+        model = AmountIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount',)
 
     def validate_amount(self, amount):
@@ -106,7 +106,7 @@ class CreateAmountIngredientSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = AmountIngredientLimit
+        model = AmountIngredient
         fields = ('id', 'amount',)
 
 
