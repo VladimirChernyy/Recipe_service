@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import CustomPagination
-from api.permissions import IsAuthorUser
+from api.permissions import IsAuthorOrReadOnly
 from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
                              IngredientSerializer, RecipeReadSerializer,
                              ShopListSerializer, SubscribeListSerializer,
@@ -78,7 +78,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    permission_classes = [IsAdminUser | IsAuthorUser
+    permission_classes = [IsAdminUser | IsAuthorOrReadOnly
                           & IsAuthenticatedOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)

@@ -155,8 +155,10 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         min_value=RecipeValidate.MIN_COOKING_TIME.value,
         max_value=RecipeValidate.MAX_COOKING_TIME.value,
         error_messages={
-            'min_value': 'Время готовки должно быть не меньше 1 минуты',
-            'max_value': 'Время готовки должно быть не больше 2 суток',
+            'min_value': f'Время готовки должно быть не меньше '
+                         f'{RecipeValidate.MIN_COOKING_TIME.value} мин',
+            'max_value': f'Время готовки должно быть не больше '
+                         f'{RecipeValidate.MAX_COOKING_TIME.value} мин',
         }
     )
 

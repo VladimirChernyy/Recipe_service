@@ -1,7 +1,7 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
-from pathlib import Path
 
 load_dotenv()
 
@@ -61,7 +61,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -78,7 +77,6 @@ DATABASES = {
 }
 
 DATABASES['default']['TEST'] = {'NAME': 'test_db'}
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -133,7 +131,7 @@ DJOSER = {
         "current_user": "users.serializers.UserSerializer",
     },
     'PERMISSIONS': {
-        "user": ("api.permissions.IsAuthorUser",),
-        "user_list": ("api.permissions.IsAuthorUser",),
+        "user": ("api.permissions.IsAuthorOrReadOnly",),
+        "user_list": ("api.permissions.IsAuthorOrReadOnly",),
     },
 }

@@ -131,7 +131,8 @@ class AmountIngredient(models.Model):
         validators=(
             validators.MinValueValidator(
                 AmountIngredientValidate.MIN_AMOUNT_INGREDIENTS.value,
-                'Минимальное кол-во ингредиентов 1',
+                f'Минимальное кол-во ингредиентов '
+                f'{AmountIngredientValidate.MIN_AMOUNT_INGREDIENTS.value}',
             ),
             validators.MaxValueValidator(
                 AmountIngredientValidate.MAX_AMOUNT_INGREDIENTS.value,
