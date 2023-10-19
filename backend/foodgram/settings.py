@@ -13,6 +13,8 @@ DEBUG = os.getenv('DEBUG', 'False') in ('True', '1', 't')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split()
 
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split()
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
