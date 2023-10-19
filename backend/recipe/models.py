@@ -2,8 +2,10 @@ from django.core import validators
 from django.db import models
 
 from foodgram.constants import (
-    AmountIngredientValidate,
-    RecipeLimitAndValidate, IngredientLimit, TagLimit
+    AmountIngredientLimit,
+    RecipeLimit,
+    IngredientLimit,
+    TagLimit, RecipeValidate, AmountIngredientValidate
 )
 from users.models import CustomUser
 
@@ -18,7 +20,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         verbose_name='Название',
-        max_length=RecipeLimitAndValidate.MAX_LEN_NAME.value,
+        max_length=RecipeLimit.MAX_LEN_NAME.value,
     )
     image = models.ImageField(
         verbose_name='Фото рецепта',
@@ -40,15 +42,17 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления',
-        default=RecipeLimitAndValidate.DEFAULT,
+        default=RecipeLimit.DEFAULT,
         validators=(
             validators.MinValueValidator(
-                RecipeLimitAndValidate.MIN_COOKING_TIME.value,
-                "Минимальное время приготовления 1 мин.",
+                RecipeValidate.MIN_COOKING_TIME.value,
+                f'Минимальное время приготовления'
+                f' {RecipeValidate.MIN_COOKING_TIME.value} мин.',
             ),
             validators.MaxValueValidator(
-                RecipeLimitAndValidate.MAX_COOKING_TIME.value,
-                "Максимальное вреся приготовления 1000 мин.",
+                RecipeValidate.MAX_COOKING_TIME.value,
+                f'Максимальное вреся приготовления '
+                f'{RecipeValidate.MAX_COOKING_TIME.value} мин.',
             ),
         ),
     )
@@ -123,7 +127,7 @@ class AmountIngredient(models.Model):
                                related_name='ingredient')
     amount = models.PositiveIntegerField(
         verbose_name='Количество',
-        default=AmountIngredientValidate.DEFAULT,
+        default=AmountIngredientLimit.DEFAULT,
         validators=(
             validators.MinValueValidator(
                 AmountIngredientValidate.MIN_AMOUNT_INGREDIENTS.value,

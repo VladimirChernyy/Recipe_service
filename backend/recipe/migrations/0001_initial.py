@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='AmountIngredient',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.PositiveIntegerField(default=foodgram.constants.AmountIngredientValidate['DEFAULT'], validators=[django.core.validators.MinValueValidator(1, 'Минимальное кол-во ингредиентов 1'), django.core.validators.MaxValueValidator(50, 'Слишком много ингредиентов!')], verbose_name='Количество')),
+                ('amount', models.PositiveIntegerField(default=foodgram.constants.AmountIngredientLimit['DEFAULT'], validators=[django.core.validators.MinValueValidator(1, 'Минимальное кол-во ингредиентов 1'), django.core.validators.MaxValueValidator(50, 'Слишком много ингредиентов!')], verbose_name='Количество')),
             ],
             options={
                 'verbose_name': 'Кол-во ангредиента',
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=100, verbose_name='Название')),
                 ('image', models.ImageField(upload_to='recipes/image/', verbose_name='Фото рецепта')),
                 ('text', models.TextField(verbose_name='Описание')),
-                ('cooking_time', models.PositiveIntegerField(default=foodgram.constants.RecipeLimitAndValidate['DEFAULT'], validators=[django.core.validators.MinValueValidator(1, 'Минимальное время приготовления 1 мин.'), django.core.validators.MaxValueValidator(2880, 'Максимальное вреся приготовления 1000 мин.')], verbose_name='Время приготовления')),
+                ('cooking_time', models.PositiveIntegerField(default=foodgram.constants.RecipeLimit['DEFAULT'], validators=[django.core.validators.MinValueValidator(1, 'Минимальное время приготовления 1 мин.'), django.core.validators.MaxValueValidator(2880, 'Максимальное вреся приготовления 1000 мин.')], verbose_name='Время приготовления')),
             ],
             options={
                 'verbose_name': 'Рецепт',

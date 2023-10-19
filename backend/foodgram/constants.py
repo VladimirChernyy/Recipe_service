@@ -8,15 +8,21 @@ class CustomUserLimit(IntEnum):
     MAX_LEN_LAST_NAME = 150
 
 
-class RecipeLimitAndValidate(IntEnum):
+class RecipeLimit(IntEnum):
     DEFAULT = 0
     MAX_LEN_NAME = 100
+
+
+class RecipeValidate(IntEnum):
     MIN_COOKING_TIME = 1
     MAX_COOKING_TIME = 2880
 
 
-class AmountIngredientValidate(IntEnum):
+class AmountIngredientLimit(IntEnum):
     DEFAULT = 0
+
+
+class AmountIngredientValidate(IntEnum):
     MAX_AMOUNT_INGREDIENTS = 50
     MIN_AMOUNT_INGREDIENTS = 1
 
@@ -32,5 +38,5 @@ class TagLimit(IntEnum):
     MAX_LEN_COLOR = 16
 
 
-class CustomPaginatorPageSize(IntEnum):
+class CustomPaginator(IntEnum):
     PAGE_SIZE = 6

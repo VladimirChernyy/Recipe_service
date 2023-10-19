@@ -1,5 +1,6 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 from pathlib import Path
 
 load_dotenv()
@@ -126,13 +127,13 @@ DJOSER = {
     'HIDE_USERS': False,
     'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        "user": "api.serializers.UserSerializer",
-        "user_list": "api.serializers.UserSerializer",
-        "user_create": "api.serializers.UserCreateSerializer",
-        "current_user": "api.serializers.UserSerializer",
+        "user": "users.serializers.UserSerializer",
+        "user_list": "users.serializers.UserSerializer",
+        "user_create": "users.serializers.UserCreateSerializer",
+        "current_user": "users.serializers.UserSerializer",
     },
     'PERMISSIONS': {
-        "user": ("api.permissions.OwnerOrUser",),
-        "user_list": ("api.permissions.OwnerOrUser",),
+        "user": ("api.permissions.IsAuthorUser",),
+        "user_list": ("api.permissions.IsAuthorUser",),
     },
 }

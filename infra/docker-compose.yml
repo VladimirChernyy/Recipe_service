@@ -10,7 +10,7 @@ services:
       - ../.env
 
   backend:
-    image: chernyybo/foodgram_backend:latest
+#    image: chernyybo/foodgram_backend:latest
     build: ../backend
     restart: always
     volumes:
@@ -20,7 +20,7 @@ services:
       - ../.env
 
   frontend:
-    image: chernyybo/foodgram_frontend:latest
+#    image: chernyybo/foodgram_frontend:latest
     build: ../frontend
     volumes:
       - ./frontend/:/app/result_build/build

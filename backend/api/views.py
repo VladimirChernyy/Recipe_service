@@ -3,22 +3,21 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipe.models import (Favorite, Ingredient, AmountIngredient, Recipe,
-                           Cart, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, \
-    IsAuthenticatedOrReadOnly
+    IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import CustomPagination
-from api.permissions import AuthorOrStaff
+from api.permissions import IsAuthorUser
 from api.serializers import (CreateRecipeSerializer, FavoriteSerializer,
                              IngredientSerializer, RecipeReadSerializer,
                              ShopListSerializer, SubscribeListSerializer,
                              TagSerializer, UserSerializer)
-from recipe.models import CustomUser
+from recipe.models import (Favorite, Ingredient, AmountIngredient, Recipe,
+                           Cart, Tag, CustomUser)
 from users.models import Follow
 
 
@@ -79,7 +78,8 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    permission_classes = (AuthorOrStaff, IsAuthenticatedOrReadOnly)
+    permission_classes = [IsAdminUser | IsAuthorUser
+                          & IsAuthenticatedOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter

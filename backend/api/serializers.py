@@ -4,9 +4,10 @@ from djoser import serializers as djoser_serializers
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, status
 
-from foodgram.constants import AmountIngredientValidate
-from recipe.models import (Favorite, Ingredient, AmountIngredient, Recipe,
-                           Tag, Cart)
+from foodgram.constants import (AmountIngredientLimit, AmountIngredientValidate,
+                                RecipeValidate)
+from recipe.models import (Favorite, Ingredient, Recipe,
+                           Tag, Cart, AmountIngredient)
 from users.serializers import UserSerializer
 from users.models import CustomUser
 
@@ -85,13 +86,14 @@ class AmountIngredientSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = AmountIngredient
+        model = AmountIngredientLimit
         fields = ('id', 'name', 'measurement_unit', 'amount',)
 
     def validate_amount(self, amount):
         if amount < AmountIngredientValidate.MIN_AMOUNT_INGREDIENTS.value:
             raise serializers.ValidationError(
-                'Минимальное кол-во ингредиентов 1')
+                f'Минимальное кол-во ингредиентов '
+                f'{AmountIngredientValidate.MIN_AMOUNT_INGREDIENTS.value}')
         if amount > AmountIngredientValidate.MAX_AMOUNT_INGREDIENTS.value:
             raise serializers.ValidationError(
                 'Слишком много ингредиентов!')
@@ -104,7 +106,7 @@ class CreateAmountIngredientSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = AmountIngredient
+        model = AmountIngredientLimit
         fields = ('id', 'amount',)
 
 
@@ -151,8 +153,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     author = UserSerializer(read_only=True, required=False)
     cooking_time = serializers.IntegerField(
-        min_value=1,
-        max_value=2880,
+        min_value=RecipeValidate.MIN_COOKING_TIME.value,
+        max_value=RecipeValidate.MAX_COOKING_TIME.value,
         error_messages={
             'min_value': 'Время готовки должно быть не меньше 1 минуты',
             'max_value': 'Время готовки должно быть не больше 2 суток',

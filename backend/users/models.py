@@ -26,12 +26,12 @@ class CustomUser(AbstractUser):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
         ordering = ('username',)
-        verbose_name = ('Пользователь',)
-        verbose_name_plural = ('Пользователи',)
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
         return self.username
@@ -48,8 +48,8 @@ class Follow(models.Model):
     )
 
     class Meta:
-        verbose_name = ('Подписчик',)
-        verbose_name_plural = ('Подписчики',)
+        verbose_name = 'Подписчик'
+        verbose_name_plural = 'Подписчики'
         constraints = (
             models.UniqueConstraint(
                 fields=('username', 'author'),
