@@ -4,8 +4,7 @@ from djoser import serializers as djoser_serializers
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, status
 
-from foodgram.constants import (AmountIngredientLimit, AmountIngredientValidate,
-                                RecipeValidate)
+from foodgram.constants import AmountIngredientValidate, RecipeValidate
 from recipe.models import (Favorite, Ingredient, Recipe,
                            Tag, Cart, AmountIngredient)
 from users.serializers import UserSerializer
