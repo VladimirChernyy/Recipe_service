@@ -11,26 +11,23 @@ services:
 
   backend:
     image: chernyybo/foodgram_backend:latest
-#    build: ../backend
     restart: always
     volumes:
       - backend_static:/app/static
       - backend_media:/app/media
     env_file:
       - ../.env
+    depends_on:
+      - db
 
   frontend:
     image: chernyybo/foodgram_frontend:latest
-#    build: ../frontend
     volumes:
       - ./frontend/:/app/result_build/build
-    depends_on:
-      - backend
 
   nginx:
     image: nginx:1.19.3
     ports:
-#      - "80:80"
       - "8088:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
