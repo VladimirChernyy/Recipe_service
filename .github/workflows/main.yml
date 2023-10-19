@@ -38,17 +38,20 @@ jobs:
           python -m pip install --upgrade pip 
           pip install flake8==6.0.0 flake8-isort==6.0.0
           pip install -r ./backend/requirements.txt
-#      - name: Install Postman CLI
-#        run: |
-#          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
-#      - name: Login to Postman CLI
-#        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-      - name: Run API tests
-        run: |
-          postman collection run "30426443-c78666df-b114-411e-b882-8aae5aad362d"
-      - name: Test with flake8
+      - name: Test with flake8 and django API tests
+        env:
+          POSTGRES_USER: django_user
+          POSTGRES_PASSWORD: django_password
+          POSTGRES_DB: django_db
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           python -m flake8 backend/
+          python -m pytest
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+          postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+          postman collection run "30426443-c78666df-b114-411e-b882-8aae5aad362d"
   build_and_push_to_docker_hub:
     name: Push Docker image to DockerHub
     runs-on: ubuntu-latest
