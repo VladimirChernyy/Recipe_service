@@ -3,10 +3,10 @@ from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, serializers
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny, \
-    IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import (IsAuthenticated, AllowAny,
+                                        IsAuthenticatedOrReadOnly, IsAdminUser)
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
@@ -91,9 +91,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         if instance.author != self.request.user:
-            raise PermissionError(
+            raise serializers.ValidationError(
                 'Вы не можете удалить этот рецепт,'
-                ' так как вы не являетесь его автором.')
+                ' вы не являетесь его автором.')
         instance.delete()
 
     @action(detail=False, methods=('GET',),
