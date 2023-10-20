@@ -89,6 +89,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeReadSerializer
         return CreateRecipeSerializer
 
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            raise PermissionError(
+                'Вы не можете удалить этот рецепт,'
+                ' так как вы не являетесь его автором.')
+        instance.delete()
+
     @action(detail=False, methods=('GET',),
             permission_classes=(IsAuthenticated,))
     def download_shopping_cart(self, request, **kwargs):
