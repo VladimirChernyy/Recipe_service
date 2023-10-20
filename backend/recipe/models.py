@@ -58,8 +58,7 @@ class Recipe(models.Model):
         ),
     )
     pub_date = models.DateTimeField(
-        # auto_now_add=True,
-        default=timezone.now,
+        auto_now_add=True,
         verbose_name='Дата публикации'
     )
 

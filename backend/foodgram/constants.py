@@ -23,7 +23,7 @@ class AmountIngredientLimit(IntEnum):
 
 
 class AmountIngredientValidate(IntEnum):
-    MAX_AMOUNT_INGREDIENTS = 50
+    MAX_AMOUNT_INGREDIENTS = 3000
     MIN_AMOUNT_INGREDIENTS = 1
 
 
