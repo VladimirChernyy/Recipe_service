@@ -259,6 +259,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         recipe.tags.set(tags)
         return super().update(recipe, validated_data)
 
+    def delete(self, recipe):
+        if recipe.author != self.context.get('request').user:
+            raise serializers.ValidationError(
+                'Вы не можете удалить этот рецепт,'
+                ' вы не являетесь его автором.')
+        recipe.delete()
+
+
     def to_representation(self, instance):
         return RecipeReadSerializer(instance, context={
             'request': self.context.get('request')
