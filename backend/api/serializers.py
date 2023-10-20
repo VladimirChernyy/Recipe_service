@@ -250,12 +250,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        if recipe.author == user:
-            AmountIngredient.objects.filter(recipe=recipe,
-                                            recipe__author=user).delete()
-            self.create_ingredients(recipe, ingredients)
-            recipe.tags.set(tags)
-            return super().update(recipe, validated_data)
+        if recipe.author != user:
+            raise serializers.ValidationError(
+                'Вы не можете обновить этот рецепт,'
+                ' вы не являетесь его автором.')
+        AmountIngredient.objects.filter(recipe=recipe).delete()
+        self.create_ingredients(recipe, ingredients)
+        recipe.tags.set(tags)
+        return super().update(recipe, validated_data)
 
     def to_representation(self, instance):
         return RecipeReadSerializer(instance, context={
