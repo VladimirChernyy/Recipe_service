@@ -266,7 +266,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 ' вы не являетесь его автором.')
         recipe.delete()
 
-
     def to_representation(self, instance):
         return RecipeReadSerializer(instance, context={
             'request': self.context.get('request')
