@@ -41,7 +41,7 @@ cd foodgram-project-react
 Генерируем новый секретный ключ Django
 
 ```
-sudo docker compose -f docker-compose.production.yml exec backend python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+sudo docker compose -f docker-compose.yml exec backend python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 
 Создаем файл .env, в котором нужно указать данные
@@ -67,25 +67,25 @@ cd infra
 
 Соберите и запустите контейнеры в фоновом режиме
 ```
-sudo docker compose -f docker-compose.production.yml up -d
+sudo docker compose -f docker-compose.yml up -d
 ```
 Примените миграции
 ```
-sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+sudo docker compose -f docker-compose.yml exec backend python manage.py migrate
 ```
 Соберите статику
 ```
-sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic
 ```
 
 Создайте суперпользователся
 ```
-sudo docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
+sudo docker compose -f docker-compose.yml exec backend python manage.py createsuperuser
 ```
 
 Загрузите игредиенты 
 ```
-sudo docker compose -f docker-compose.production.yml exec backend python manage.py load_data
+sudo docker compose -f docker-compose.yml exec backend python manage.py load_data
 ```
 
 ## Над проектом работал:
