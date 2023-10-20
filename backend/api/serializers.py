@@ -247,10 +247,12 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, recipe, validated_data):
+        user = self.context.get('request').user
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        if recipe.author == self.context.get('request').user:
-            AmountIngredient.objects.filter(recipe=recipe).delete()
+        if recipe.author == user:
+            AmountIngredient.objects.filter(recipe=recipe,
+                                            recipe__author=user).delete()
             self.create_ingredients(recipe, ingredients)
             recipe.tags.set(tags)
             return super().update(recipe, validated_data)
