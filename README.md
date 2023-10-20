@@ -32,9 +32,11 @@ curl -fSL https://get.docker.com -o get-docker.sh
 sudo sh ./get-docker.sh
 sudo apt-get install docker-compose-plugin;
 ``` 
-Создайте и перейдите в директорию проекта.
+Клонируйте с GitHub проект и перейдите в директорию проекта.
 ``` 
-mkdir foodgram && cd foodgram
+git@github.com:VladimirChernyy/foodgram-project-react.git
+
+cd foodgram-project-react
 ``` 
 Генерируем новый секретный ключ Django
 
@@ -57,10 +59,10 @@ POSTGRES_PASSWORD=<Желаемый_пароль_пользователя_баз
 DB_HOST=db
 DB_PORT=5432
 ```
-Скопируйте папку с локального сервера на удаленный:
+Перейдите директорию infra:
 
 ```
-scp -r infra/* <server_user>@<server_IP>:/home/<server_user>/foodgram/
+cd infra
 ```
 
 Соберите и запустите контейнеры в фоновом режиме
@@ -81,77 +83,9 @@ sudo docker compose -f docker-compose.production.yml exec backend python manage.
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py createsuperuser
 ```
 
-
-
-Устанавливаем NGINX
+Загрузите игредиенты 
 ```
-sudo apt install nginx -y
-```
-Запускаем NGINX
-```
-sudo systemctl start nginx
-```
-Настраиваем firewall
-```
-sudo ufw allow 'Nginx Full'
-sudo ufw allow OpenSSH
-```
-Включаем firewall
-```
-sudo ufw enable
-```
-Откройте конфигурационный файл NGINX
-```
-sudo nano /etc/nginx/sites-enabled/default
-```
-Добавьте настройки:
-```
-server {
-    server_name 62.84.123.251 ya-foodgramm.ddns.net;
-
-    location / {
-        proxy_set_header        Host $host;
-        proxy_set_header        X-Real-IP $remote_addr;
-        proxy_set_header        X-Forwarded-Proto $scheme;
-        proxy_pass http://127.0.0.1:8088;
-    }
-
-```
-
-Проверяем корректность настроек
-```
-sudo nginx -t
-```
-Запускаем NGINX
-```
-sudo systemctl start nginx
-```
-
-Настройте HTTPS
-
-
-Установите пакетный менеджер snap.
-```
-sudo apt install snapd
-```
-Установите и обновите зависимости для пакетного менеджера snap.
-```
-sudo snap install core; sudo snap refresh core
-```
-Установите пакет certbot.
-```
-sudo snap install --classic certbot
-```
-Создайте ссылку на certbot в системной директории, чтобы у пользователя с правами администратора был доступ к этому пакету.
-sudo ln -s /snap/bin/certbot /usr/bin/certbot
-
-Получите сертификат 
-```
-sudo certbot --nginx
-```
-Перезапустите NGINX
-```
-sudo systemctl reload nginx
+sudo docker compose -f docker-compose.production.yml exec backend python manage.py load_data
 ```
 
 ## Над проектом работал:

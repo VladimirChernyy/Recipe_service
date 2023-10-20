@@ -90,7 +90,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "infra/docker-compose.yml,infra/nginx.conf"
+          source: "infra/docker-compose.prodaction.yml,infra/nginx.conf"
           target: "foodgram"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
@@ -101,10 +101,10 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd foodgram/infra
-            sudo docker compose -f docker-compose.yml pull
-            sudo docker compose -f docker-compose.yml down 
-            sudo docker compose -f docker-compose.yml up -d
-            sudo docker compose -f docker-compose.yml exec backend python manage.py makemigrations
-            sudo docker compose -f docker-compose.yml exec backend python manage.py migrate
-            sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic --noinput
+            sudo docker compose -f docker-compose.prodaction.yml pull
+            sudo docker compose -f docker-compose.prodaction.yml down 
+            sudo docker compose -f docker-compose.prodaction.yml up -d
+            sudo docker compose -f docker-compose.prodaction.yml exec backend python manage.py makemigrations
+            sudo docker compose -f docker-compose.prodaction.yml exec backend python manage.py migrate
+            sudo docker compose -f docker-compose.prodaction.yml exec backend python manage.py collectstatic --noinput
             sudo docker image prune
