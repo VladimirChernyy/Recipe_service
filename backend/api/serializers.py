@@ -249,10 +249,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     def update(self, recipe, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        AmountIngredient.objects.filter(recipe=recipe).delete()
-        self.create_ingredients(recipe, ingredients)
-        recipe.tags.set(tags)
-        return super().update(recipe, validated_data)
+        if recipe.author == self.context.get('request').user:
+            AmountIngredient.objects.filter(recipe=recipe).delete()
+            self.create_ingredients(recipe, ingredients)
+            recipe.tags.set(tags)
+            return super().update(recipe, validated_data)
 
     def to_representation(self, instance):
         return RecipeReadSerializer(instance, context={
